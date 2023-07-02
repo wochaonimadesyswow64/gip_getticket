@@ -1,6 +1,5 @@
 import sys
 
-
 if sys.platform == "win32":
     import ctypes
     import winreg
@@ -19,12 +18,6 @@ if sys.platform == "win32":
 
 from PySide2 import QtWidgets
 from selenium import webdriver
-
-from selenium.webdriver.edge import options as edge_option
-from selenium.webdriver.chrome import options as chrome_option
-from selenium.webdriver.firefox import options as firefox_option
-from selenium.webdriver.safari import options as safari_option
-from selenium.webdriver.ie import options as ie_option
 
 from selenium.webdriver.support.select import Select
 from selenium.webdriver.common.by import By
@@ -164,7 +157,7 @@ class MainWindow(QtWidgets.QMainWindow, main_ui.Ui_MainWindow):
             except selenium.common.exceptions.TimeoutException:
                 print("页面加载太拉了，停了算了")
                 self.driver.execute_script("window.stop()")
-        
+
         self.driver.switch_to.frame(self.driver.find_element(By.ID, "product_detail_area"))
         self.driver.set_page_load_timeout(300)
 
@@ -177,7 +170,6 @@ class MainWindow(QtWidgets.QMainWindow, main_ui.Ui_MainWindow):
         date_dom = wait_select_dom.find_elements(By.TAG_NAME, "option")
         date_dom = [i for i in date_dom][1]
         self.info["date"] = date_dom.text
-        date = self.prebuild_date(date_dom.text)
 
         time.sleep(1)
         wait_time_dom = self.driver.find_element(By.ID, "play_time")
@@ -189,7 +181,7 @@ class MainWindow(QtWidgets.QMainWindow, main_ui.Ui_MainWindow):
         time_dom = wait_time_dom.find_elements(By.TAG_NAME, "option")
         time_dom = [i for i in time_dom][1]
         self.info["time"] = time_dom.text
-        
+
         self.driver.execute_script(("function new_open(url, target, feature) {"
                                     "win = new Object();"
                                     "window.uuid_uuid_uuid_uuid_url = url;"
@@ -212,8 +204,14 @@ class MainWindow(QtWidgets.QMainWindow, main_ui.Ui_MainWindow):
             self.driver.execute_script("fnBookNoticeShowHide('');")
         except:
             pass
-        self.driver.execute_script(f"fnSelectPlayDate(0, '{date}')")
+
+        self.driver.switch_to.frame(self.driver.find_element(By.NAME, "ifrmBookStep"))
+        dates = self.driver.find_elements(By.NAME, "CellPlayDate")
+        dates[int(self.days.text()) - 1].click()
+
+        self.driver.switch_to.default_content()
         self.driver.execute_script("document.getElementById('LargeNextBtnLink').click()")
+
         try:
             self.driver.switch_to.alert.accept()
         except:
@@ -240,7 +238,34 @@ class MainWindow(QtWidgets.QMainWindow, main_ui.Ui_MainWindow):
 
         self.show_msg_box(self.days.text())
 
+
+        self.driver.switch_to.frame(self.driver.find_element(By.NAME, "ifrmSeat"))
+        self.driver.switch_to.frame(self.driver.find_element(By.NAME, "ifrmSeatDetail"))
+        map = self.driver.find_element(By.NAME, "Map")
+        map = map.find_elements(By.TAG_NAME, "area")
+
+        have = False
+        while not have:
+            for i in range(len(map)):
+                map = self.driver.find_element(By.NAME, "Map")
+                map = map.find_elements(By.TAG_NAME, "area")
+                try:
+                    map[i].click()
+                except:
+                    continue
+                sub_map = self.driver.find_element(By.NAME, "TmgsTable")
+                has = sub_map.find_elements(By.CLASS_NAME, "SeatN")
+                if list(has):
+                    has[0].click()
+                    have = True
+                    break
+                self.driver.switch_to.default_content()
+                self.driver.switch_to.frame(self.driver.find_element(By.NAME, "ifrmSeat"))
+                self.driver.find_element(By.CLASS_NAME, "theater").find_element(By.TAG_NAME, "a").click()
+                self.driver.switch_to.frame(self.driver.find_element(By.NAME, "ifrmSeatDetail"))
+
         time.sleep(1)
+        self.driver.switch_to.default_content()
         self.driver.switch_to.frame(self.driver.find_element(By.NAME, "ifrmSeat"))
         [i for i in self.driver.find_element(By.CLASS_NAME, "btnWrap").find_elements(By.TAG_NAME, "a")][1].click()
         self.driver.switch_to.default_content()

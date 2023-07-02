@@ -30,5 +30,5 @@ class Ui_MessageBox(object):
         self.label.setText(_translate("MessageBox", "# 提示\n"
 "## 您选择的第几天：\n"
 "## 请先输入验证码（如有）后\n"
-"## 选择座位后点击OK。"))
+"## 点击OK。"))
         self.days.setText(_translate("MessageBox", "1"))
