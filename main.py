@@ -268,8 +268,7 @@ class MainWindow(QtWidgets.QMainWindow, main_ui.Ui_MainWindow):
         except:
             self.driver.quit()
             time.sleep(1)
-            _thread.start_new_thread(self.get_ticket, tuple())
-            return
+            self.get_ticket()
         
         time.sleep(1)
         self.driver.switch_to.default_content()
