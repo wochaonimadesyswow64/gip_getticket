@@ -164,6 +164,7 @@ class MainWindow(QtWidgets.QMainWindow, main_ui.Ui_MainWindow):
             except selenium.common.exceptions.TimeoutException:
                 print("页面加载太拉了，停了算了")
                 self.driver.execute_script("window.stop()")
+        
         self.driver.switch_to.frame(self.driver.find_element(By.ID, "product_detail_area"))
         self.driver.set_page_load_timeout(300)
 
