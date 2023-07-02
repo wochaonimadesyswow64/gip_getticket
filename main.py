@@ -116,6 +116,12 @@ class MainWindow(QtWidgets.QMainWindow, main_ui.Ui_MainWindow):
         else:
             return os.path.expanduser("~")
 
+    @staticmethod
+    def prebuild_date(date):
+        date = date[:-5]
+        date = date.replace("-", "")
+        return date
+
     def show_msg_box(self, days):
         self.dialog = MessageBox(self)
         self.dialog.days.setText(days)
@@ -170,6 +176,7 @@ class MainWindow(QtWidgets.QMainWindow, main_ui.Ui_MainWindow):
         date_dom = wait_select_dom.find_elements(By.TAG_NAME, "option")
         date_dom = [i for i in date_dom][1]
         self.info["date"] = date_dom.text
+        date = self.prebuild_date(date_dom.text)
 
         time.sleep(1)
         wait_time_dom = self.driver.find_element(By.ID, "play_time")
@@ -181,7 +188,7 @@ class MainWindow(QtWidgets.QMainWindow, main_ui.Ui_MainWindow):
         time_dom = wait_time_dom.find_elements(By.TAG_NAME, "option")
         time_dom = [i for i in time_dom][1]
         self.info["time"] = time_dom.text
-
+        
         self.driver.execute_script(("function new_open(url, target, feature) {"
                                     "win = new Object();"
                                     "window.uuid_uuid_uuid_uuid_url = url;"
@@ -204,6 +211,7 @@ class MainWindow(QtWidgets.QMainWindow, main_ui.Ui_MainWindow):
             self.driver.execute_script("fnBookNoticeShowHide('');")
         except:
             pass
+        self.driver.execute_script(f"fnSelectPlayDate(0, '{date}')")
         self.driver.execute_script("document.getElementById('LargeNextBtnLink').click()")
         try:
             self.driver.switch_to.alert.accept()
