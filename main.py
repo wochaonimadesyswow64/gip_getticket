@@ -25,6 +25,7 @@ import selenium.common.exceptions
 import time
 import os
 import pickle
+import _thread
 
 import main_ui
 import messagebox
@@ -245,25 +246,31 @@ class MainWindow(QtWidgets.QMainWindow, main_ui.Ui_MainWindow):
         map = map.find_elements(By.TAG_NAME, "area")
 
         have = False
-        while not have:
-            for i in range(len(map)):
-                map = self.driver.find_element(By.NAME, "Map")
-                map = map.find_elements(By.TAG_NAME, "area")
-                try:
-                    map[i].click()
-                except:
-                    continue
-                sub_map = self.driver.find_element(By.NAME, "TmgsTable")
-                has = sub_map.find_elements(By.CLASS_NAME, "SeatN")
-                if list(has):
-                    has[0].click()
-                    have = True
-                    break
-                self.driver.switch_to.default_content()
-                self.driver.switch_to.frame(self.driver.find_element(By.NAME, "ifrmSeat"))
-                self.driver.find_element(By.CLASS_NAME, "theater").find_element(By.TAG_NAME, "a").click()
-                self.driver.switch_to.frame(self.driver.find_element(By.NAME, "ifrmSeatDetail"))
-
+        try:
+            while not have:
+                for i in range(len(map)):
+                    map = self.driver.find_element(By.NAME, "Map")
+                    map = map.find_elements(By.TAG_NAME, "area")
+                    try:
+                        map[i].click()
+                    except:
+                        continue
+                    sub_map = self.driver.find_element(By.NAME, "TmgsTable")
+                    has = sub_map.find_elements(By.CLASS_NAME, "SeatN")
+                    if list(has):
+                        has[0].click()
+                        have = True
+                        break
+                    self.driver.switch_to.default_content()
+                    self.driver.switch_to.frame(self.driver.find_element(By.NAME, "ifrmSeat"))
+                    self.driver.find_element(By.CLASS_NAME, "theater").find_element(By.TAG_NAME, "a").click()
+                    self.driver.switch_to.frame(self.driver.find_element(By.NAME, "ifrmSeatDetail"))
+        except:
+            self.driver.quit()
+            time.sleep(1)
+            _thread.start_new_thread(self.get_ticket, tuple())
+            return
+        
         time.sleep(1)
         self.driver.switch_to.default_content()
         self.driver.switch_to.frame(self.driver.find_element(By.NAME, "ifrmSeat"))
