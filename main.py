@@ -118,7 +118,7 @@ class MainWindow(QtWidgets.QMainWindow, main_ui.Ui_MainWindow):
 
     @staticmethod
     def prebuild_date(date):
-        date = date[:-5]
+        date = date[:-6]
         date = date.replace("-", "")
         return date
 
