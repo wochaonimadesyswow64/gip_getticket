@@ -210,6 +210,7 @@ class MainWindow(QtWidgets.QMainWindow, main_ui.Ui_MainWindow):
         dates = self.driver.find_elements(By.NAME, "CellPlayDate")
         dates[int(self.days.text()) - 1].click()
 
+        time.sleep(1)
         self.driver.switch_to.default_content()
         self.driver.execute_script("document.getElementById('LargeNextBtnLink').click()")
 
